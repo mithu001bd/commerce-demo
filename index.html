@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>ApexMart — Modern Commerce Storefront</title>
+  <meta name="description" content="ApexMart — a modern, lightning-fast storefront for audio, footwear, watches and everyday essentials. Built with Tailwind CSS and Alpine.js." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['Sora', 'Inter', 'ui-sans-serif', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+              800: '#3730a3', 900: '#312e81'
+            }
+          },
+          boxShadow: {
+            soft: '0 12px 32px -16px rgba(15, 23, 42, 0.22)',
+            glow: '0 18px 45px -18px rgba(99, 102, 241, 0.7)'
+          },
+          keyframes: {
+            'fade-in': { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            'fade-up': { '0%': { opacity: '0', transform: 'translateY(16px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            'toast-in': { '0%': { opacity: '0', transform: 'translateY(16px) scale(.96)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+            float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+            pop: { '0%': { opacity: '0', transform: 'scale(.94)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            draw: { '0%': { strokeDashoffset: '52' }, '100%': { strokeDashoffset: '0' } },
+            'ring-pop': { '0%': { opacity: '0', transform: 'scale(.55)' }, '60%': { opacity: '1', transform: 'scale(1.06)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            shimmer: { '100%': { transform: 'translateX(100%)' } }
+          },
+          animation: {
+            'fade-in': 'fade-in .4s ease-out both',
+            'fade-up': 'fade-up .5s cubic-bezier(.22,1,.36,1) both',
+            'toast-in': 'toast-in .32s cubic-bezier(.22,1,.36,1) both',
+            float: 'float 6s ease-in-out infinite',
+            pop: 'pop .25s ease-out both',
+            draw: 'draw .7s ease-out .15s both',
+            'ring-pop': 'ring-pop .5s cubic-bezier(.22,1,.36,1) both'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+    html { scroll-padding-top: 7.75rem; -webkit-tap-highlight-color: transparent; }
+    body { text-rendering: optimizeLegibility; }
+    ::selection { background: #4f46e5; color: #fff; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .thin-scrollbar::-webkit-scrollbar { width: 8px; }
+    .thin-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    @keyframes demo-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .demo-marquee { animation: demo-marquee 30s linear infinite; will-change: transform; }
+    .demo-marquee:hover { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    }
+  </style>
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-brand-600">
+<div x-data="store" x-init="init()" @keydown.escape.window="closeAll()" class="flex min-h-screen flex-col">
+
+  <!-- Sticky top stack: portfolio banner + navbar stay visible while scrolling -->
+  <div class="sticky top-0 z-40">
+  <!-- ========================= PORTFOLIO DEMO BANNER ========================== -->
+  <div class="relative overflow-hidden bg-slate-950 text-white">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-600/50 via-fuchsia-500/25 to-amber-400/20"></div>
+      <div class="absolute -left-16 -top-20 h-44 w-44 rounded-full bg-brand-500/30 blur-2xl"></div>
+      <div class="absolute -right-12 -top-24 h-48 w-48 rounded-full bg-fuchsia-500/25 blur-2xl"></div>
+    </div>
+    <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand-400/80 to-transparent" aria-hidden="true"></div>
+    <div class="relative mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6 lg:px-8">
+      <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-200 backdrop-blur">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Portfolio Demo
+      </span>
+      <div class="relative min-w-0 flex-1 overflow-hidden" aria-label="Demo project built by Mithun Rahman, Full-Stack Web Developer and UI/UX Designer">
+        <div class="demo-marquee flex w-max items-center whitespace-nowrap text-[11px] font-medium tracking-wide text-slate-200 sm:text-xs">
+          <span class="pr-10">✨ Demo Project built by <span class="font-bold text-white">Mithun Rahman</span><span class="mx-2 text-slate-500">|</span>Full-Stack Web Developer &amp; UI/UX Designer<span class="mx-2 text-slate-500">|</span>ApexMart Storefront</span>
+          <span class="pr-10" aria-hidden="true">✨ Demo Project built by <span class="font-bold text-white">Mithun Rahman</span><span class="mx-2 text-slate-500">|</span>Full-Stack Web Developer &amp; UI/UX Designer<span class="mx-2 text-slate-500">|</span>ApexMart Storefront</span>
+        </div>
+        <div class="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-slate-950/90 to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-slate-950/90 to-transparent" aria-hidden="true"></div>
+      </div>
+      <a href="https://mithu001bd.github.io/" target="_blank" rel="noopener"
+         class="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-white px-3 text-[11px] font-bold text-slate-900 shadow transition hover:-translate-y-px hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:h-9 sm:px-4 sm:text-xs">
+        <span class="hidden md:inline">Back to Main Portfolio</span><span class="md:hidden">Portfolio</span>
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ================================ HEADER ================================= -->
+  <header class="border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center gap-3 sm:gap-4">
+
+        <!-- Brand -->
+        <a href="#top" class="group flex shrink-0 items-center gap-2.5" aria-label="ApexMart home">
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-fuchsia-500 text-white shadow-glow transition group-hover:scale-105">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </span>
+          <span class="font-display text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">Apex<span class="text-brand-600">Mart</span></span>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="ml-2 hidden items-center gap-1 lg:flex" aria-label="Primary">
+          <a href="#catalog" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Shop</a>
+          <button type="button" @click="setCategory('Electronics', true)" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">New Arrivals</button>
+          <button type="button" @click="setCategory('All', true)" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Deals</button>
+          <a href="#support" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Support</a>
+        </nav>
+<!-- Live search (desktop) -->
+        <div class="relative ml-auto hidden flex-1 sm:block sm:max-w-md" @click.outside="searchOpen = false">
+          <label for="search-desktop" class="sr-only">Search products</label>
+          <span class="pointer-events-none absolute inset-y-0 left-0 grid w-11 place-items-center text-slate-400">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          </span>
+          <input id="search-desktop" type="search" x-model="search" @focus="searchOpen = true" @input="searchOpen = true"
+            placeholder="Search headphones, sneakers, watches&hellip;" autocomplete="off"
+            class="h-11 w-full rounded-xl border border-slate-200 bg-slate-100/70 pl-11 pr-10 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10" />
+          <button type="button" x-show="search" x-cloak @click="search = ''; searchOpen = false"
+            class="absolute inset-y-0 right-0 grid w-10 place-items-center text-slate-400 transition hover:text-slate-700" aria-label="Clear search">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+
+          <!-- Instant results dropdown -->
+          <div x-show="searchOpen && search.trim().length > 0" x-cloak
+            x-transition:enter="transition duration-150 ease-out" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
+            class="absolute left-0 right-0 top-[calc(100%+0.5rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft">
+            <template x-if="searchResults.length > 0">
+              <ul class="max-h-80 overflow-y-auto thin-scrollbar py-1">
+                <template x-for="p in searchResults" :key="'sd-' + p.id">
+                  <li>
+                    <button type="button" @click="openQuickView(p); searchOpen = false"
+                      class="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-slate-50">
+                      <img :src="p.thumb" :alt="p.title" loading="lazy" decoding="async" class="h-11 w-11 shrink-0 rounded-lg object-cover" />
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate text-sm font-semibold text-slate-800" x-text="p.title"></span>
+                        <span class="block text-xs text-slate-500" x-text="p.category"></span>
+                      </span>
+                      <span class="shrink-0 text-sm font-bold text-slate-900" x-text="money(p.price)"></span>
+                    </button>
+                  </li>
+                </template>
+              </ul>
+            </template>
+            <p x-show="searchResults.length === 0" class="px-4 py-6 text-center text-sm text-slate-500">
+              No products match &ldquo;<span class="font-semibold text-slate-700" x-text="search"></span>&rdquo;
+            </p>
+          </div>
+        </div>
+<!-- Actions -->
+        <div class="ml-auto flex items-center gap-1 sm:ml-0 sm:gap-2">
+          <button type="button" @click="toggleWishlistOnly()" :aria-pressed="wishlistOnly" title="Show saved items"
+            class="relative hidden h-11 w-11 place-items-center rounded-xl transition hover:bg-slate-100 sm:grid"
+            :class="wishlistOnly ? 'text-rose-500' : 'text-slate-600 hover:text-rose-500'" aria-label="Show saved items">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" :fill="wishlistOnly ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            <span x-show="wishlist.length > 0" x-cloak class="absolute right-1.5 top-1.5 grid h-4 min-w-[1.25rem] place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white" x-text="wishlist.length"></span>
+          </button>
+
+          <!-- Cart trigger -->
+          <button type="button" @click="openCart()" :aria-label="`Open cart, ${cartCount} item(s)`"
+            class="relative grid h-11 w-11 place-items-center rounded-xl text-slate-700 transition hover:bg-slate-100">
+            <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2.5 3h2.2l2.3 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+            <span x-show="cartCount > 0" x-cloak class="absolute right-0.5 top-0.5 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-gradient-to-br from-brand-500 to-fuchsia-500 px-1 text-[11px] font-bold text-white shadow-md ring-2 ring-white" x-text="cartCount"></span>
+          </button>
+
+          <!-- Mobile menu toggle -->
+          <button type="button" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" aria-label="Toggle navigation menu"
+            class="grid h-11 w-11 place-items-center rounded-xl text-slate-700 transition hover:bg-slate-100 lg:hidden">
+            <svg x-show="!menuOpen" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            <svg x-show="menuOpen" x-cloak class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile search -->
+      <div class="pb-3 sm:hidden">
+        <div class="relative">
+          <label for="search-mobile" class="sr-only">Search products</label>
+          <span class="pointer-events-none absolute inset-y-0 left-0 grid w-11 place-items-center text-slate-400">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          </span>
+          <input id="search-mobile" type="search" x-model="search" placeholder="Search products&hellip;" autocomplete="off"
+            class="h-11 w-full rounded-xl border border-slate-200 bg-slate-100/70 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10" />
+        </div>
+        <p x-show="search.trim().length > 0" x-cloak class="px-1 pt-2 text-xs text-slate-500">
+          <span class="font-semibold text-slate-700" x-text="searchResults.length"></span> result(s) found
+          <button type="button" @click="search = ''" class="ml-1 font-semibold text-brand-600 underline">Clear</button>
+        </p>
+      </div>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div x-show="menuOpen" x-cloak
+      x-transition:enter="transition duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition duration-150 ease-in" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+      class="border-t border-slate-200 bg-white lg:hidden">
+      <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3 sm:px-6" aria-label="Mobile">
+        <template x-for="c in categories" :key="'mn-' + c">
+          <button type="button" @click="setCategory(c, true); menuOpen = false"
+            class="flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+            <span x-text="c === 'All' ? 'Shop all products' : c"></span>
+            <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </template>
+        <a href="#support" @click="menuOpen = false" class="rounded-lg px-3 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">Support</a>
+      </nav>
+    </div>
+  </header>
+  </div>
+  <!-- Free-shipping notice (scrolls away with the page) -->
+  <div class="bg-slate-950 text-slate-200">
+    <div class="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-[11px] font-medium tracking-wide sm:text-xs">
+      <svg class="h-3.5 w-3.5 shrink-0 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      <span>Free express shipping on orders over <span class="font-bold text-white">$150</span> — ends Sunday</span>
+      <span class="hidden text-slate-500 sm:inline">|</span>
+      <span class="hidden text-slate-400 sm:inline">30-day returns</span>
+    </div>
+  </div>
+  <!-- ================================= HERO ================================= -->
+  <main id="top" class="flex-1">
+  <section class="relative overflow-hidden bg-slate-950">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="absolute -left-24 -top-10 h-80 w-80 rounded-full bg-brand-600/30 blur-3xl"></div>
+      <div class="absolute -right-20 top-24 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]"></div>
+    </div>
+
+    <div class="relative mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8 lg:pb-28 lg:pt-20">
+      <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+
+        <!-- Hero copy -->
+        <div class="animate-fade-up">
+          <span class="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-xs">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-brand-400"></span>
+            </span>
+            New Season 2026
+          </span>
+
+          <h1 class="mt-6 font-display text-[2.1rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Gear that moves<br class="hidden sm:block" />
+            at the speed of <span class="bg-gradient-to-r from-brand-400 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">you</span>.
+          </h1>
+
+          <p class="mt-5 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-lg">
+            Everyday essentials, engineered to last. Studio-grade audio, all-day footwear and precision timepieces &mdash; curated, price-matched, and shipped free over $150.
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <a href="#catalog" class="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-slate-900 shadow-soft transition hover:-translate-y-0.5 hover:bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-400/40">
+              Shop Collection
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <button type="button" @click="setCategory('All', true)"
+              class="inline-flex h-12 items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 text-sm font-bold text-white backdrop-blur transition hover:border-white/30 hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/20">
+              Explore Deals
+            </button>
+          </div>
+
+          <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/10 pt-6">
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Products</dt>
+              <dd class="font-display text-2xl font-extrabold text-white"><span x-text="products.length"></span>+</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Avg. rating</dt>
+              <dd class="font-display text-2xl font-extrabold text-white">4.7<span class="text-base text-slate-400">/5</span></dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Delivery</dt>
+              <dd class="font-display text-2xl font-extrabold text-white">48<span class="text-base text-slate-400">h</span></dd>
+            </div>
+          </dl>
+        </div>
+        <!-- Hero visual -->
+        <div class="relative mx-auto w-full max-w-md animate-fade-up lg:max-w-none">
+          <div class="absolute -inset-3 rounded-[2.25rem] bg-gradient-to-tr from-brand-500/30 via-fuchsia-500/20 to-transparent blur-2xl" aria-hidden="true"></div>
+
+          <div class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900 shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=80"
+                 alt="Aurora Studio Pro over-ear headphones" width="1000" height="1000" fetchpriority="high" decoding="async"
+                 class="h-72 w-full object-cover sm:h-96 lg:h-[30rem]" />
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent p-5 sm:p-6">
+              <div class="flex items-end justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-[11px] font-semibold uppercase tracking-widest text-brand-300">Editor's pick</p>
+                  <p class="mt-1 truncate font-display text-lg font-bold text-white">Aurora Studio Pro</p>
+                  <p class="truncate text-xs text-slate-300 sm:text-sm">Active noise cancelling &middot; 40h battery</p>
+                </div>
+                <div class="shrink-0 text-right">
+                  <p class="text-xs text-slate-400 line-through">$329</p>
+                  <p class="font-display text-xl font-extrabold text-white">$249</p>
+                </div>
+              </div>
+              <button type="button" @click="addToCartById('p1', 1)"
+                class="mt-4 w-full rounded-xl bg-white/95 py-3 text-sm font-bold text-slate-900 transition hover:bg-white focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-400/40">
+                Add to bag
+              </button>
+            </div>
+          </div>
+
+          <div class="absolute -right-2 top-5 hidden rounded-2xl border border-white/10 bg-white/95 px-3.5 py-2.5 shadow-xl sm:block">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Free shipping</p>
+            <p class="text-sm font-extrabold text-slate-900">Over $150</p>
+          </div>
+          <div class="absolute -left-3 top-8 hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/95 px-3.5 py-2.5 shadow-xl sm:flex lg:-left-6">
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-amber-100 text-amber-500">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            </span>
+            <span>
+              <span class="block text-sm font-extrabold leading-none text-slate-900">4.8 / 5</span>
+              <span class="block text-[11px] text-slate-500">2,140 reviews</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ================================ FEATURES ============================== -->
+  <section class="border-b border-slate-200 bg-white">
+    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-7 px-4 py-10 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <div class="flex items-start gap-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-bold text-slate-900">Free shipping</p>
+          <p class="text-xs text-slate-500">On orders over $150</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-bold text-slate-900">30-day returns</p>
+          <p class="text-xs text-slate-500">No questions asked</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-bold text-slate-900">2-year warranty</p>
+          <p class="text-xs text-slate-500">On every product</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-fuchsia-50 text-fuchsia-600">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-bold text-slate-900">Secure checkout</p>
+          <p class="text-xs text-slate-500">256-bit encryption</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== CATALOG ================================ -->
+  <section id="catalog" class="scroll-mt-28 bg-slate-50 py-14 sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div class="max-w-xl">
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-600">Shop the collection</p>
+          <h2 class="mt-2 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Everything you need, nothing you don't</h2>
+          <p class="mt-3 text-sm text-slate-600 sm:text-base">Filter by category or search instantly &mdash; the catalog updates as you type.</p>
+        </div>
+        <div class="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+          <p class="text-sm text-slate-500">
+            Showing <span class="font-bold text-slate-900" x-text="filteredProducts.length"></span> of <span class="font-bold text-slate-900" x-text="products.length"></span> products
+          </p>
+          <button type="button" x-show="wishlistOnly" x-cloak @click="wishlistOnly = false"
+            class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 transition hover:bg-rose-100"
+            aria-label="Clear saved items filter">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            Saved items only
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category pills -->
+      <div class="no-scrollbar -mx-4 mt-7 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+        <template x-for="c in categories" :key="'pill-' + c">
+          <button type="button" @click="setCategory(c)"
+            class="shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20"
+            :class="activeCategory === c ? 'border-brand-600 bg-brand-600 text-white shadow-glow' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'">
+            <span x-text="c"></span>
+            <span class="ml-1.5 text-[11px] font-bold opacity-70" x-text="countFor(c)"></span>
+          </button>
+        </template>
+      </div>
+      <!-- Product grid -->
+      <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <template x-for="p in filteredProducts" :key="p.id">
+          <article class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl">
+
+            <!-- Media -->
+            <div class="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+              <img :src="p.card" :alt="p.title" width="800" height="1000" loading="lazy" decoding="async"
+                   class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.06]" />
+
+              <!-- Badges -->
+              <div class="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+                <span x-show="p.badge" x-cloak class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide shadow-sm" :class="badgeClass(p.badge)" x-text="p.badge"></span>
+                <span x-show="p.oldPrice" x-cloak class="rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm" x-text="discountLabel(p)"></span>
+              </div>
+
+              <!-- Wishlist toggle -->
+              <button type="button" @click="toggleWishlist(p.id)" :aria-pressed="isWishlisted(p.id)" :aria-label="'Save ' + p.title"
+                class="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 backdrop-blur transition hover:scale-105 hover:bg-white"
+                :class="isWishlisted(p.id) ? 'text-rose-500' : 'text-slate-500'">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" :fill="isWishlisted(p.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+              </button>
+
+              <!-- Quick view -->
+              <button type="button" @click="openQuickView(p)"
+                class="absolute inset-x-3 bottom-3 translate-y-3 rounded-xl bg-slate-900/90 py-2.5 text-xs font-bold text-white opacity-0 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100">
+                Quick view
+              </button>
+            </div>
+            <!-- Body -->
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-brand-600" x-text="p.category"></p>
+              <h3 class="mt-1 font-display text-base font-bold leading-snug text-slate-900">
+                <button type="button" @click="openQuickView(p)" class="line-clamp-2 text-left transition hover:text-brand-700" x-text="p.title"></button>
+              </h3>
+
+              <!-- Rating -->
+              <div class="mt-2 flex items-center gap-2">
+                <div class="relative h-4 w-[88px] shrink-0" role="img" :aria-label="p.rating + ' out of 5 stars'">
+                  <div class="absolute inset-0 flex gap-0.5 text-slate-300" aria-hidden="true">
+                    <template x-for="i in 5" :key="'bg-' + p.id + '-' + i"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></template>
+                  </div>
+                  <div class="absolute inset-y-0 left-0 flex gap-0.5 overflow-hidden text-amber-400" :style="'width:' + ratingPct(p) + '%'" aria-hidden="true">
+                    <template x-for="i in 5" :key="'fg-' + p.id + '-' + i"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></template>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-slate-600" x-text="p.rating"></span>
+                <span class="text-xs text-slate-400" x-text="'(' + p.reviews + ')'"></span>
+              </div>
+
+              <!-- Price + CTA -->
+              <div class="mt-auto flex items-end justify-between gap-3 pt-4">
+                <div class="min-w-0">
+                  <p class="font-display text-lg font-extrabold leading-none text-slate-900" x-text="money(p.price)"></p>
+                  <p x-show="p.oldPrice" x-cloak class="mt-1 text-xs text-slate-400 line-through" x-text="money(p.oldPrice)"></p>
+                </div>
+                <button type="button" @click="addToCart(p, 1)" :aria-label="'Add ' + p.title + ' to cart'"
+                  class="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-slate-900 px-4 text-xs font-bold text-white transition hover:bg-brand-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 active:scale-95">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  Add
+                </button>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <!-- Empty state -->
+      <div x-show="filteredProducts.length === 0" x-cloak class="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+        <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400">
+          <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        </span>
+        <h3 class="mt-4 font-display text-lg font-bold text-slate-900">No products found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try a different search term or reset your filters.</p>
+        <button type="button" @click="resetFilters()" class="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-bold text-white transition hover:bg-brand-600">
+          Clear filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== NEWSLETTER ============================== -->
+  <section id="support" class="scroll-mt-28 bg-white py-14 sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-12 sm:px-12 sm:py-16">
+        <div class="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-brand-600/30 blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -bottom-16 -left-10 h-64 w-64 rounded-full bg-fuchsia-500/20 blur-3xl" aria-hidden="true"></div>
+        <div class="relative grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <h2 class="font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">Join ApexClub &mdash; get 10% off</h2>
+            <p class="mt-3 max-w-md text-sm text-slate-300 sm:text-base">Early drops, member-only pricing and free returns. No spam, unsubscribe anytime.</p>
+          </div>
+          <form class="flex flex-col gap-3 sm:flex-row" @submit.prevent="subscribe()">
+            <label for="news-email" class="sr-only">Email address</label>
+            <input id="news-email" type="email" required x-model="newsletterEmail" placeholder="you@example.com"
+              class="h-12 flex-1 rounded-xl border border-white/15 bg-white/10 px-4 text-sm text-white placeholder:text-slate-400 focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/20" />
+            <button type="submit" class="h-12 shrink-0 rounded-xl bg-white px-6 text-sm font-bold text-slate-900 transition hover:bg-slate-100">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+  <!-- ================================ FOOTER ================================ -->
+  <footer class="border-t border-slate-800 bg-slate-950 text-slate-400">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="lg:pr-8">
+          <div class="flex items-center gap-2.5">
+            <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-fuchsia-500 text-white">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </span>
+            <span class="font-display text-lg font-extrabold tracking-tight text-white">Apex<span class="text-brand-400">Mart</span></span>
+          </div>
+          <p class="mt-4 max-w-xs text-sm leading-relaxed">Modern essentials, honestly priced. Designed in-house, tested for real life, delivered in 48 hours.</p>
+          <div class="mt-5 flex gap-2">
+            <a href="#" aria-label="Instagram" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 transition hover:bg-white/10 hover:text-white">
+              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter / X" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 transition hover:bg-white/10 hover:text-white">
+              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3l-6.6 7.6L22 21h-6.3l-4.4-5.8L6.2 21H3l7.1-8.1L2.5 3h6.4l4 5.3z"/></svg>
+            </a>
+            <a href="#" aria-label="YouTube" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 transition hover:bg-white/10 hover:text-white">
+              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.45-5.2a2.7 2.7 0 0 0-1.9-1.9C18.9 4.4 12 4.4 12 4.4s-6.9 0-8.65.5A2.7 2.7 0 0 0 1.45 6.8C1 8.5 1 12 1 12s0 3.5.45 5.2a2.7 2.7 0 0 0 1.9 1.9c1.75.5 8.65.5 8.65.5s6.9 0 8.65-.5a2.7 2.7 0 0 0 1.9-1.9C23 15.5 23 12 23 12zM9.8 15.3V8.7l5.7 3.3z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-white">Shop</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <template x-for="c in categories.slice(1)" :key="'fc-' + c">
+              <li><button type="button" @click="setCategory(c, true)" class="transition hover:text-white" x-text="c"></button></li>
+            </template>
+            <li><button type="button" @click="setCategory('All', true)" class="transition hover:text-white">New arrivals</button></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-white">Support</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li><a href="#" class="transition hover:text-white">Shipping &amp; delivery</a></li>
+            <li><a href="#" class="transition hover:text-white">Returns &amp; refunds</a></li>
+            <li><a href="#" class="transition hover:text-white">Track your order</a></li>
+            <li><a href="#" class="transition hover:text-white">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-white">Company</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li><a href="#" class="transition hover:text-white">About ApexMart</a></li>
+            <li><a href="#" class="transition hover:text-white">Sustainability</a></li>
+            <li><a href="#" class="transition hover:text-white">Careers</a></li>
+            <li><a href="#" class="transition hover:text-white">Press kit</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 flex flex-col gap-3 border-t border-slate-800 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+        <p>&copy; <span x-text="new Date().getFullYear()"></span> ApexMart. All rights reserved.</p>
+        <p>Demo storefront &middot; Built with Tailwind CSS &amp; Alpine.js</p>
+      </div>
+    </div>
+  </footer>
+  <!-- ============================ CART DRAWER ============================== -->
+  <div x-show="cartOpen" x-cloak class="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Shopping cart">
+    <div x-show="cartOpen" x-transition.opacity.duration.300ms @click="cartOpen = false" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+
+    <div x-show="cartOpen" @keydown.escape.stop="cartOpen = false"
+      x-transition:enter="transition transform duration-300 ease-out"
+      x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition transform duration-200 ease-in"
+      x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+      class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl">
+
+      <!-- Header -->
+      <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+        <div>
+          <h2 class="font-display text-lg font-extrabold tracking-tight text-slate-900">Your cart</h2>
+          <p class="text-xs text-slate-500"><span x-text="cartCount"></span> item(s) in bag</p>
+        </div>
+        <button type="button" @click="cartOpen = false" class="grid h-10 w-10 place-items-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" aria-label="Close cart">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+
+      <!-- Free shipping progress -->
+      <div x-show="cart.length > 0" x-cloak class="border-b border-slate-200 bg-brand-50/60 px-5 py-3">
+        <p class="text-xs font-semibold text-brand-800" x-text="shippingMessage()"></p>
+        <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-brand-100">
+          <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-fuchsia-500 transition-all duration-500" :style="'width:' + shippingProgress() + '%'"></div>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="flex-1 overflow-y-auto thin-scrollbar px-5">
+        <!-- Empty state -->
+        <div x-show="cart.length === 0" class="flex h-full flex-col items-center justify-center py-16 text-center">
+          <span class="grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-slate-400">
+            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2.5 3h2.2l2.3 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+          </span>
+          <p class="mt-4 font-display text-base font-bold text-slate-900">Your cart is empty</p>
+          <p class="mt-1 max-w-xs text-sm text-slate-500">Looks like you haven't added anything yet. Let's fix that.</p>
+          <button type="button" @click="cartOpen = false; scrollToCatalog()" class="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-bold text-white transition hover:bg-brand-600">
+            Browse products
+          </button>
+        </div>
+        <!-- Line items -->
+        <ul x-show="cart.length > 0" x-cloak class="divide-y divide-slate-100">
+          <template x-for="item in cart" :key="item.id">
+            <li class="flex gap-3 py-4">
+              <img :src="item.thumb" :alt="item.title" width="160" height="160" loading="lazy"
+                   class="h-20 w-20 shrink-0 rounded-xl bg-slate-100 object-cover" />
+              <div class="flex min-w-0 flex-1 flex-col">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="line-clamp-2 text-sm font-bold leading-snug text-slate-900" x-text="item.title"></p>
+                    <p class="mt-0.5 text-xs text-slate-500" x-text="item.category"></p>
+                  </div>
+                  <button type="button" @click="removeFromCart(item.id)" :aria-label="'Remove ' + item.title"
+                    class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  </button>
+                </div>
+
+                <div class="mt-2.5 flex items-center justify-between gap-3">
+                  <div class="inline-flex items-center rounded-lg border border-slate-200">
+                    <button type="button" @click="decreaseQty(item.id)" :disabled="item.qty <= 1" aria-label="Decrease quantity"
+                      class="grid h-9 w-9 place-items-center rounded-l-lg text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                    </button>
+                    <span class="w-9 text-center text-sm font-bold text-slate-900" x-text="item.qty"></span>
+                    <button type="button" @click="increaseQty(item.id)" aria-label="Increase quantity"
+                      class="grid h-9 w-9 place-items-center rounded-r-lg text-slate-600 transition hover:bg-slate-100">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                  </div>
+                  <p class="font-display text-sm font-extrabold text-slate-900" x-text="money(item.price * item.qty)"></p>
+                </div>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </div>
+      <!-- Footer / totals -->
+      <footer x-show="cart.length > 0" x-cloak class="border-t border-slate-200 bg-slate-50 px-5 py-4">
+        <dl class="space-y-2 text-sm">
+          <div class="flex items-center justify-between">
+            <dt class="text-slate-600">Subtotal</dt>
+            <dd class="font-semibold text-slate-900" x-text="money(subtotal)"></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-slate-600">Shipping</dt>
+            <dd class="font-semibold" :class="shipping === 0 ? 'text-emerald-600' : 'text-slate-900'" x-text="shipping === 0 ? 'FREE' : money(shipping)"></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-slate-600">Estimated tax <span class="text-xs text-slate-400">(8.5%)</span></dt>
+            <dd class="font-semibold text-slate-900" x-text="money(tax)"></dd>
+          </div>
+        </dl>
+        <div class="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+          <span class="font-display text-base font-extrabold text-slate-900">Total</span>
+          <span class="font-display text-xl font-extrabold text-slate-900" x-text="money(total)"></span>
+        </div>
+        <button type="button" @click="startCheckout()"
+          class="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-fuchsia-600 text-sm font-bold text-white shadow-glow transition hover:brightness-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 active:scale-[.99]">
+          Proceed to Checkout
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button type="button" @click="cartOpen = false"
+          class="mt-2 h-10 w-full rounded-xl text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800">
+          Continue shopping
+        </button>
+        <p class="mt-2 text-center text-[11px] text-slate-400">Secure payment &middot; Free returns &middot; 2-year warranty</p>
+      </footer>
+    </div>
+  </div>
+  <!-- ============================ QUICK VIEW =============================== -->
+  <div x-show="quickViewOpen" x-cloak class="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Product details">
+    <div x-show="quickViewOpen" x-transition.opacity.duration.200ms @click="closeQuickView()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+    <div x-show="quickViewOpen"
+      x-transition:enter="transition duration-300 ease-out"
+      x-transition:enter-start="opacity-0 translate-y-8 sm:scale-95 sm:translate-y-0"
+      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+      x-transition:leave="transition duration-200 ease-in"
+      x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+      class="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+
+      <button type="button" @click="closeQuickView()" aria-label="Close product details"
+        class="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-slate-600 backdrop-blur transition hover:bg-white hover:text-slate-900">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+
+      <template x-if="quickViewProduct">
+      <div class="grid overflow-y-auto thin-scrollbar sm:grid-cols-2">
+        <!-- Image -->
+        <div class="relative bg-gradient-to-br from-slate-100 to-slate-200 sm:min-h-full">
+          <img :src="quickViewProduct.image" :alt="quickViewProduct.title" width="1000" height="1000"
+               class="h-64 w-full object-cover sm:h-full sm:min-h-[28rem]" />
+          <div class="absolute left-4 top-4 flex flex-col items-start gap-1.5">
+            <span x-show="quickViewProduct.badge" x-cloak class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide shadow-sm" :class="badgeClass(quickViewProduct.badge)" x-text="quickViewProduct.badge"></span>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="flex flex-col p-5 sm:p-7">
+          <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600" x-text="quickViewProduct.category"></p>
+          <h2 class="mt-2 font-display text-xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl" x-text="quickViewProduct.title"></h2>
+
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <div class="relative h-4 w-[88px] shrink-0" role="img" :aria-label="quickViewProduct.rating + ' out of 5 stars'">
+              <div class="absolute inset-0 flex gap-0.5 text-slate-300" aria-hidden="true">
+                <template x-for="i in 5" :key="'qbg-' + i"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></template>
+              </div>
+              <div class="absolute inset-y-0 left-0 flex gap-0.5 overflow-hidden text-amber-400" :style="'width:' + ratingPct(quickViewProduct) + '%'" aria-hidden="true">
+                <template x-for="i in 5" :key="'qfg-' + i"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></template>
+              </div>
+            </div>
+            <span class="text-sm font-bold text-slate-700" x-text="quickViewProduct.rating"></span>
+            <span class="text-xs text-slate-500" x-text="'\u00b7 ' + quickViewProduct.reviews + ' reviews'"></span>
+            <span x-show="quickViewProduct.stock" x-cloak class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700" x-text="quickViewProduct.stock"></span>
+          </div>
+
+          <p class="mt-4 text-sm leading-relaxed text-slate-600" x-text="quickViewProduct.description"></p>
+
+          <ul class="mt-4 space-y-2">
+            <template x-for="(f, i) in quickViewProduct.features" :key="'qf-' + i">
+              <li class="flex items-start gap-2 text-sm text-slate-600">
+                <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+                <span x-text="f"></span>
+              </li>
+            </template>
+          </ul>
+          <!-- Price -->
+          <div class="mt-6 flex flex-wrap items-end gap-3">
+            <p class="font-display text-3xl font-extrabold tracking-tight text-slate-900" x-text="money(quickViewProduct.price)"></p>
+            <p x-show="quickViewProduct.oldPrice" x-cloak class="pb-1 text-sm text-slate-400 line-through" x-text="money(quickViewProduct.oldPrice)"></p>
+            <span x-show="quickViewProduct.oldPrice" x-cloak class="mb-1.5 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-600" x-text="discountLabel(quickViewProduct)"></span>
+          </div>
+
+          <!-- Quantity + add -->
+          <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div class="inline-flex items-center rounded-xl border border-slate-200">
+              <button type="button" @click="quickViewQty = Math.max(1, quickViewQty - 1)" aria-label="Decrease quantity"
+                class="grid h-12 w-12 place-items-center rounded-l-xl text-slate-600 transition hover:bg-slate-100">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>
+              </button>
+              <span class="w-12 text-center text-base font-extrabold text-slate-900" x-text="quickViewQty" aria-live="polite"></span>
+              <button type="button" @click="quickViewQty = Math.min(10, quickViewQty + 1)" aria-label="Increase quantity"
+                class="grid h-12 w-12 place-items-center rounded-r-xl text-slate-600 transition hover:bg-slate-100">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+            <button type="button" @click="addToCart(quickViewProduct, quickViewQty); closeQuickView()"
+              class="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 text-sm font-bold text-white transition hover:bg-brand-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 active:scale-[.99]">
+              Add to cart
+              <span class="text-white/70" x-text="'\u00b7 ' + money(quickViewProduct.price * quickViewQty)"></span>
+            </button>
+          </div>
+
+          <button type="button" @click="toggleWishlist(quickViewProduct.id)"
+            class="mt-3 inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" :fill="isWishlisted(quickViewProduct.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              :class="isWishlisted(quickViewProduct.id) ? 'text-rose-500' : ''"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            <span x-text="isWishlisted(quickViewProduct.id) ? 'Saved to wishlist' : 'Save for later'"></span>
+          </button>
+
+          <dl class="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 pt-5 text-center">
+            <div>
+              <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Ships in</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">48 hours</dd>
+            </div>
+            <div>
+              <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Returns</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">30 days</dd>
+            </div>
+            <div>
+              <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Warranty</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">2 years</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- ============================= CHECKOUT ================================= -->
+  <div x-show="checkoutOpen" x-cloak class="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Checkout">
+    <div x-show="checkoutOpen" x-transition.opacity.duration.200ms @click="checkoutStep === 'form' && (checkoutOpen = false)" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+    <div x-show="checkoutOpen"
+      x-transition:enter="transition duration-300 ease-out"
+      x-transition:enter-start="opacity-0 translate-y-8 sm:scale-95 sm:translate-y-0"
+      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+      x-transition:leave="transition duration-200 ease-in"
+      x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+      class="relative flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+
+      <!-- ===================== STEP 1: FORM ===================== -->
+      <template x-if="checkoutStep === 'form'">
+        <form @submit.prevent="placeOrder()" class="flex max-h-[94vh] flex-col">
+          <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-7">
+            <div>
+              <h2 class="font-display text-lg font-extrabold tracking-tight text-slate-900">Secure checkout</h2>
+              <p class="text-xs text-slate-500">All fields marked * are required</p>
+            </div>
+            <button type="button" @click="checkoutOpen = false" class="grid h-10 w-10 place-items-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" aria-label="Close checkout">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </header>
+
+          <div class="grid gap-8 overflow-y-auto thin-scrollbar p-5 sm:p-7 lg:grid-cols-5">
+            <!-- Shipping -->
+            <div class="lg:col-span-3">
+              <h3 class="flex items-center gap-2 font-display text-base font-bold text-slate-900">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-[11px] font-bold text-white">1</span>
+                Shipping address
+              </h3>
+
+              <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="f-name" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Full name *</label>
+                  <input id="f-name" type="text" required x-model="form.name" :class="fieldClass('name')" placeholder="Alex Morgan" />
+                  <p x-show="errors.name" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.name"></p>
+                </div>
+                <div>
+                  <label for="f-email" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Email *</label>
+                  <input id="f-email" type="email" required x-model="form.email" :class="fieldClass('email')" placeholder="alex@example.com" />
+                  <p x-show="errors.email" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.email"></p>
+                </div>
+                <div>
+                  <label for="f-phone" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Phone *</label>
+                  <input id="f-phone" type="tel" required x-model="form.phone" :class="fieldClass('phone')" placeholder="+1 555 0134" />
+                  <p x-show="errors.phone" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.phone"></p>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="f-address" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Street address *</label>
+                  <input id="f-address" type="text" required x-model="form.address" :class="fieldClass('address')" placeholder="221B Baker Street" />
+                  <p x-show="errors.address" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.address"></p>
+                </div>
+                <div>
+                  <label for="f-city" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">City *</label>
+                  <input id="f-city" type="text" required x-model="form.city" :class="fieldClass('city')" placeholder="San Francisco" />
+                  <p x-show="errors.city" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.city"></p>
+                </div>
+                <div>
+                  <label for="f-zip" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">ZIP / Postcode *</label>
+                  <input id="f-zip" type="text" required x-model="form.zip" :class="fieldClass('zip')" placeholder="94103" />
+                  <p x-show="errors.zip" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.zip"></p>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="f-country" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Country *</label>
+                  <select id="f-country" required x-model="form.country" :class="fieldClass('country')">
+                    <option>United States</option>
+                    <option>Canada</option>
+                    <option>United Kingdom</option>
+                    <option>Germany</option>
+                    <option>Australia</option>
+                    <option>Bangladesh</option>
+                    <option>India</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="f-notes" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Delivery notes <span class="font-medium normal-case text-slate-400">(optional)</span></label>
+                  <textarea id="f-notes" rows="2" x-model="form.notes" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10" placeholder="Leave with the front desk"></textarea>
+                </div>
+              </div>
+              <!-- Payment -->
+              <div class="mt-8">
+                <h3 class="flex items-center gap-2 font-display text-base font-bold text-slate-900">
+                  <span class="grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-[11px] font-bold text-white">2</span>
+                  Payment method
+                </h3>
+
+                <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                  <template x-for="m in paymentMethods" :key="m.id">
+                    <button type="button" @click="form.payment = m.id"
+                      class="flex flex-col gap-1 rounded-2xl border-2 p-3.5 text-left transition focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20"
+                      :class="form.payment === m.id ? 'border-brand-600 bg-brand-50/60' : 'border-slate-200 hover:border-slate-300'">
+                      <span class="flex items-center gap-2 text-sm font-bold text-slate-900">
+                        <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full border-2" :class="form.payment === m.id ? 'border-brand-600' : 'border-slate-300'">
+                          <span x-show="form.payment === m.id" class="h-2.5 w-2.5 rounded-full bg-brand-600"></span>
+                        </span>
+                        <span x-text="m.label"></span>
+                      </span>
+                      <span class="pl-7 text-xs text-slate-500" x-text="m.hint"></span>
+                    </button>
+                  </template>
+                </div>
+
+                <!-- Card details -->
+                <div x-show="form.payment === 'card'" x-cloak
+                  x-transition:enter="transition duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
+                  class="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:grid-cols-4">
+                  <div class="sm:col-span-2">
+                    <label for="f-card" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Card number</label>
+                    <input id="f-card" type="text" inputmode="numeric" x-model="form.cardNumber" :class="fieldClass('cardNumber')" placeholder="4242 4242 4242 4242" />
+                    <p x-show="errors.cardNumber" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.cardNumber"></p>
+                  </div>
+                  <div>
+                    <label for="f-exp" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Expiry</label>
+                    <input id="f-exp" type="text" x-model="form.cardExpiry" :class="fieldClass('cardExpiry')" placeholder="MM / YY" />
+                    <p x-show="errors.cardExpiry" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.cardExpiry"></p>
+                  </div>
+                  <div>
+                    <label for="f-cvc" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">CVC</label>
+                    <input id="f-cvc" type="text" inputmode="numeric" x-model="form.cardCvc" :class="fieldClass('cardCvc')" placeholder="123" />
+                    <p x-show="errors.cardCvc" x-cloak class="mt-1 text-xs font-semibold text-rose-600" x-text="errors.cardCvc"></p>
+                  </div>
+                  <p class="flex items-center gap-2 text-xs text-slate-500 sm:col-span-4">
+                    <svg class="h-4 w-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                    Demo only &mdash; no real payment is processed and nothing is charged.
+                  </p>
+                </div>
+
+                <p x-show="form.payment === 'cod'" x-cloak class="mt-4 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-xs text-slate-500">
+                  <svg class="h-4 w-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+                  Please have the exact amount ready. Our courier accepts cash and contactless.
+                </p>
+                <p x-show="form.payment === 'wallet'" x-cloak class="mt-4 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-xs text-slate-500">
+                  <svg class="h-4 w-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12h3"/></svg>
+                  You will be redirected to your wallet app to approve the payment.
+                </p>
+              </div>
+            </div>
+            <!-- Order summary -->
+            <aside class="lg:col-span-2">
+              <h3 class="flex items-center gap-2 font-display text-base font-bold text-slate-900">
+                <span class="grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-[11px] font-bold text-white">3</span>
+                Order summary
+              </h3>
+
+              <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                <ul class="max-h-56 space-y-3 overflow-y-auto thin-scrollbar pr-1">
+                  <template x-for="item in cart" :key="'sum-' + item.id">
+                    <li class="flex items-center gap-3">
+                      <img :src="item.thumb" :alt="item.title" loading="lazy" class="h-12 w-12 shrink-0 rounded-lg bg-slate-100 object-cover" />
+                      <div class="min-w-0 flex-1">
+                        <p class="truncate text-xs font-semibold text-slate-800" x-text="item.title"></p>
+                        <p class="text-[11px] text-slate-500" x-text="'Qty ' + item.qty + ' \u00d7 ' + money(item.price)"></p>
+                      </div>
+                      <p class="shrink-0 text-xs font-bold text-slate-900" x-text="money(item.price * item.qty)"></p>
+                    </li>
+                  </template>
+                </ul>
+
+                <dl class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
+                  <div class="flex items-center justify-between">
+                    <dt class="text-slate-600">Subtotal</dt>
+                    <dd class="font-semibold text-slate-900" x-text="money(subtotal)"></dd>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <dt class="text-slate-600">Shipping</dt>
+                    <dd class="font-semibold" :class="shipping === 0 ? 'text-emerald-600' : 'text-slate-900'" x-text="shipping === 0 ? 'FREE' : money(shipping)"></dd>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <dt class="text-slate-600">Tax (8.5%)</dt>
+                    <dd class="font-semibold text-slate-900" x-text="money(tax)"></dd>
+                  </div>
+                </dl>
+
+                <div class="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+                  <span class="font-display text-base font-extrabold text-slate-900">Total</span>
+                  <span class="font-display text-xl font-extrabold text-slate-900" x-text="money(total)"></span>
+                </div>
+              </div>
+
+              <ul class="mt-4 space-y-2 text-xs text-slate-500">
+                <li class="flex items-center gap-2">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+                  30-day money-back guarantee
+                </li>
+                <li class="flex items-center gap-2">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+                  Free returns on all orders
+                </li>
+                <li class="flex items-center gap-2">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+                  Encrypted, PCI-compliant checkout
+                </li>
+              </ul>
+            </aside>
+          </div>
+          <!-- Action bar -->
+          <div class="flex flex-col gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div class="flex items-baseline gap-2">
+              <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total payable</span>
+              <span class="font-display text-xl font-extrabold text-slate-900" x-text="money(total)"></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" @click="checkoutOpen = false"
+                class="h-12 rounded-xl px-5 text-sm font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800">
+                Back to cart
+              </button>
+              <button type="submit"
+                class="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-6 text-sm font-bold text-white shadow-glow transition hover:brightness-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 active:scale-[.99]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Complete Order
+              </button>
+            </div>
+          </div>
+        </form>
+      </template>
+      <!-- ===================== STEP 2: PROCESSING ===================== -->
+      <template x-if="checkoutStep === 'processing'">
+        <div class="flex flex-col items-center justify-center px-6 py-20 text-center">
+          <span class="relative grid h-24 w-24 place-items-center">
+            <span class="absolute inset-0 animate-ping rounded-full bg-brand-500/15"></span>
+            <span class="relative grid h-16 w-16 place-items-center rounded-full bg-brand-50">
+              <svg class="h-8 w-8 animate-spin text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg>
+            </span>
+          </span>
+          <h2 class="mt-6 font-display text-xl font-extrabold tracking-tight text-slate-900">Processing your order&hellip;</h2>
+          <p class="mt-2 max-w-sm text-sm text-slate-500">Please keep this window open while we confirm your payment and reserve your items.</p>
+        </div>
+      </template>
+
+      <!-- ===================== STEP 3: SUCCESS ===================== -->
+      <template x-if="checkoutStep === 'success'">
+        <div class="flex max-h-[94vh] flex-col items-center overflow-y-auto thin-scrollbar px-6 py-12 text-center sm:py-16">
+          <span class="relative grid h-24 w-24 place-items-center rounded-full bg-emerald-50 animate-ring-pop">
+            <svg class="h-16 w-16 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" class="text-emerald-200"/>
+              <path class="animate-draw" style="stroke-dasharray:52" d="m8 12.4 2.6 2.6L16.2 9.4"/>
+            </svg>
+          </span>
+
+          <h2 class="mt-6 font-display text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Order Placed Successfully!</h2>
+          <p class="mt-2 max-w-md text-sm text-slate-600">
+            Thank you<span x-show="lastOrder.name" x-cloak>, <span class="font-semibold text-slate-800" x-text="lastOrder.name"></span></span>! A confirmation email is on its way to
+            <span class="font-semibold text-slate-800" x-text="lastOrder.email"></span>.
+          </p>
+
+          <div class="mt-7 w-full max-w-md rounded-2xl border border-slate-200 bg-slate-50/70 p-5 text-left">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+              <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Order number</span>
+              <span class="font-display text-sm font-extrabold text-slate-900" x-text="lastOrder.id"></span>
+            </div>
+            <dl class="mt-3 space-y-2 text-sm">
+              <div class="flex items-center justify-between">
+                <dt class="text-slate-500">Items</dt>
+                <dd class="font-semibold text-slate-900" x-text="lastOrder.items + ' item(s)'"></dd>
+              </div>
+              <div class="flex items-center justify-between">
+                <dt class="text-slate-500">Payment</dt>
+                <dd class="font-semibold text-slate-900" x-text="lastOrder.payment"></dd>
+              </div>
+              <div class="flex items-center justify-between">
+                <dt class="text-slate-500">Delivery</dt>
+                <dd class="font-semibold text-slate-900">Arrives in 2&ndash;4 days</dd>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-200 pt-2">
+                <dt class="font-display text-base font-extrabold text-slate-900">Total paid</dt>
+                <dd class="font-display text-lg font-extrabold text-slate-900" x-text="money(lastOrder.total)"></dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row">
+            <button type="button" @click="finishOrder()"
+              class="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 text-sm font-bold text-white transition hover:bg-brand-600">
+              Continue shopping
+            </button>
+            <button type="button" @click="finishOrder()"
+              class="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-6 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+              Track order
+            </button>
+          </div>
+
+          <p class="mt-5 text-xs text-slate-400">This is a demo storefront &mdash; no payment was actually taken.</p>
+        </div>
+      </template>
+    </div>
+  </div>
+  <!-- ============================== TOASTS ================================= -->
+  <div class="pointer-events-none fixed inset-x-4 bottom-4 z-[60] flex flex-col gap-2 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-full sm:max-w-sm"
+       role="status" aria-live="polite" aria-atomic="false">
+    <template x-for="t in toasts" :key="t.id">
+      <div x-transition:enter="transition duration-300 ease-out"
+           x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:translate-x-6"
+           x-transition:enter-end="opacity-100 translate-x-0 translate-y-0"
+           x-transition:leave="transition duration-200 ease-in"
+           x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-2"
+           class="pointer-events-auto flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl">
+        <img :src="t.image" :alt="t.title" width="96" height="96" class="h-12 w-12 shrink-0 rounded-xl bg-slate-100 object-cover" />
+        <div class="min-w-0 flex-1">
+          <p class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-emerald-600">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+            <span x-text="t.label"></span>
+          </p>
+          <p class="mt-0.5 truncate text-sm font-bold text-slate-800" x-text="t.title"></p>
+        </div>
+        <button type="button" @click="removeToast(t.id)" class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Dismiss notification">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </template>
+  </div>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      /* Unsplash image URL builder */
+      const U = (id, w) => 'https://images.unsplash.com/photo-' + id + '?auto=format&fit=crop&w=' + w + '&q=80';
+
+      Alpine.data('store', () => ({
+        /* ------------------ Product catalog (real Unsplash imagery) ------------------ */
+        products: [
+          { id:'p1', title:'Aurora Studio Pro Headphones', category:'Electronics', price:249, oldPrice:329, rating:4.8, reviews:2140, badge:'Trending', stock:'Low stock', photo:'1505740420928-5e560c06d30e',
+            description:'Over-ear studio headphones with adaptive noise cancelling, memory-foam earcups and a 40-hour battery. Tuned for detail without the listening fatigue.',
+            features:['Adaptive ANC with transparency mode','40h playback, 5-min quick charge','Bluetooth 5.3 multipoint + USB-C'] },
+
+          { id:'p2', title:'Pulse Air Runner Sneakers', category:'Footwear', price:139, oldPrice:174, rating:4.7, reviews:1680, badge:'', stock:'In stock', photo:'1549298916-b41d501d3772',
+            description:'A daily trainer built on a responsive foam midsole and breathable engineered mesh. Light enough for tempo runs, cushioned enough for all day.',
+            features:['Responsive nitrogen-infused foam','Recycled engineered mesh upper','Weight: 268g (US M9)'] },
+
+          { id:'p3', title:'Nova Chrono Smartwatch S6', category:'Watches', price:199, oldPrice:null, rating:4.9, reviews:1302, badge:'New', stock:'In stock', photo:'1523275335684-37898b6baf30',
+            description:'A 1.9\" always-on AMOLED display with GPS, SpO2 and 14-day battery life. Sapphire-coated glass and a 100m water resistance rating.',
+            features:['1.9" always-on AMOLED, 2000 nits','Dual-band GPS + 100m water resistance','14-day battery, fast magnetic charge'] },
+
+          { id:'p4', title:'Tactile Pro Mechanical Keyboard', category:'Electronics', price:159, oldPrice:null, rating:4.6, reviews:928, badge:'Trending', stock:'In stock', photo:'1587829741301-dc798b83add3',
+            description:'A 75% hot-swappable board with gasket mounting, dual-layer sound dampening and per-key RGB. Wired or low-latency wireless.',
+            features:['Gasket-mounted, hot-swap sockets','Tri-mode: USB-C / 2.4G / Bluetooth','Per-key RGB with custom profiles'] },
+
+          { id:'p5', title:'Voyager Minimal Backpack', category:'Apparel', price:89, oldPrice:105, rating:4.5, reviews:496, badge:'', stock:'In stock', photo:'1553062407-98eeb64c6a62',
+            description:'A water-repellent 22L daypack with a padded 16\" laptop sleeve and a hidden anti-theft pocket. Slim profile, surprisingly roomy.',
+            features:['22L capacity, 16" padded sleeve','Water-repellent recycled shell','Luggage pass-through + hidden pocket'] },
+          { id:'p6', title:'Horizon Polarized Sunglasses', category:'Apparel', price:79, oldPrice:null, rating:4.4, reviews:374, badge:'Best Seller', stock:'In stock', photo:'1572635196237-14b3f281503f',
+            description:'Polarized CR-39 lenses in a lightweight acetate frame with spring hinges and full UV400 protection. Timeless shape, modern comfort.',
+            features:['Polarized UV400 lenses','Lightweight Italian acetate','Spring hinges, hard case included'] },
+
+          { id:'p7', title:'SonicWave Portable Speaker', category:'Electronics', price:99, oldPrice:132, rating:4.6, reviews:743, badge:'', stock:'In stock', photo:'1608043152269-423dbba4e7e1',
+            description:'A pocketable 360° speaker with punchy passive radiators, 20-hour battery and an IP67 rating. Pair two for true stereo.',
+            features:['360° sound with dual passive radiators','20h battery, IP67 waterproof','Stereo pairing + built-in mic'] },
+
+          { id:'p8', title:'Heritage Classic Leather Watch', category:'Watches', price:179, oldPrice:null, rating:4.8, reviews:288, badge:'Limited', stock:'Only 12 left', photo:'1524805444758-089113d48a6d',
+            description:'A 38mm brushed-steel case with an automatic movement and Italian leather strap. Sapphire crystal and hand-finished detailing.',
+            features:['Automatic movement, 40h reserve','Sapphire crystal, 5ATM','Hand-finished Italian leather strap'] },
+
+          { id:'p9', title:'Trailblaze Street Sneakers', category:'Footwear', price:129, oldPrice:149, rating:4.5, reviews:612, badge:'', stock:'In stock', photo:'1595950653106-6c9ebd614d3a',
+            description:'Court-inspired silhouette with a gum outsole and premium tumbled leather. Grippy, cushioned and easy to style.',
+            features:['Premium tumbled leather upper','Gum rubber outsole, high traction','Ortholite cushioned insole'] },
+
+          { id:'p10', title:'Atmos Zip Hoodie', category:'Apparel', price:69, oldPrice:null, rating:4.6, reviews:261, badge:'New', stock:'In stock', photo:'1556821840-3a63f95609a7',
+            description:'A heavyweight 420gsm brushed-back fleece with a full-length zip and a relaxed fit. Pre-shrunk, pill-resistant, built to last.',
+            features:['420gsm brushed-back fleece','Pre-shrunk, pill-resistant','Relaxed fit with kangaroo pockets'] },
+        ],
+
+        /* ------------------------------ UI state ------------------------------ */
+        search: '',
+        searchOpen: false,
+        activeCategory: 'All',
+        menuOpen: false,
+        cartOpen: false,
+        quickViewOpen: false,
+        quickViewProduct: null,
+        quickViewQty: 1,
+        checkoutOpen: false,
+        checkoutStep: 'form',
+        cart: [],
+        wishlist: [],
+        wishlistOnly: false,
+        toasts: [],
+        toastSeq: 0,
+        newsletterEmail: '',
+        errors: {},
+        lastOrder: { id: '', name: '', email: '', items: 0, total: 0, payment: '' },
+
+        /* --------------------------- Commerce config --------------------------- */
+        TAX_RATE: 0.085,
+        FREE_SHIP_THRESHOLD: 150,
+        SHIPPING_FEE: 9.99,
+
+        paymentMethods: [
+          { id: 'card', label: 'Card', hint: 'Visa, Mastercard, Amex' },
+          { id: 'cod', label: 'Cash on Delivery', hint: 'Pay when it arrives' },
+          { id: 'wallet', label: 'Mobile Wallet', hint: 'Apple Pay / Google Pay' }
+        ],
+
+        form: {
+          name: '', email: '', phone: '', address: '', city: '', zip: '',
+          country: 'United States', notes: '',
+          payment: 'card', cardNumber: '', cardExpiry: '', cardCvc: ''
+        },
+
+        /* ------------------------------ Getters ------------------------------ */
+        get categories() { return ['All', 'Electronics', 'Apparel', 'Footwear', 'Watches']; },
+
+        get filteredProducts() {
+          const q = this.search.trim().toLowerCase();
+          return this.products.filter(p => {
+            const inCategory = this.activeCategory === 'All' || p.category === this.activeCategory;
+            const inWishlist = !this.wishlistOnly || this.wishlist.includes(p.id);
+            const inSearch = !q || (p.title + ' ' + p.category + ' ' + p.description).toLowerCase().includes(q);
+            return inCategory && inWishlist && inSearch;
+          });
+        },
+
+        get searchResults() {
+          const q = this.search.trim().toLowerCase();
+          if (!q) return [];
+          return this.products
+            .filter(p => (p.title + ' ' + p.category).toLowerCase().includes(q))
+            .slice(0, 5);
+        },
+
+        get overlayOpen() { return this.cartOpen || this.quickViewOpen || this.checkoutOpen; },
+        get cartCount() { return this.cart.reduce((n, i) => n + i.qty, 0); },
+        get subtotal() { return this.cart.reduce((n, i) => n + i.price * i.qty, 0); },
+        get shipping() {
+          if (this.cart.length === 0) return 0;
+          return this.subtotal >= this.FREE_SHIP_THRESHOLD ? 0 : this.SHIPPING_FEE;
+        },
+        get tax() { return Math.round(this.subtotal * this.TAX_RATE * 100) / 100; },
+        get total() { return Math.round((this.subtotal + this.shipping + this.tax) * 100) / 100; },
+
+        /* ------------------------------ Lifecycle ---------------------------- */
+        init() {
+          // Derive the responsive Unsplash URLs from each product's photo id
+          this.products.forEach(p => {
+            p.image = U(p.photo, 1200);
+            p.card = U(p.photo, 800);
+            p.thumb = U(p.photo, 200);
+          });
+
+          // Restore persisted cart + wishlist
+          try {
+            const savedCart = JSON.parse(localStorage.getItem('apexmart.cart') || '[]');
+            if (Array.isArray(savedCart)) this.cart = savedCart.filter(i => i && i.id && i.qty > 0);
+            const savedWishlist = JSON.parse(localStorage.getItem('apexmart.wishlist') || '[]');
+            if (Array.isArray(savedWishlist)) this.wishlist = savedWishlist;
+          } catch (err) { /* ignore corrupt storage */ }
+
+          // Persist on change
+          this.$watch('cart', v => { try { localStorage.setItem('apexmart.cart', JSON.stringify(v)); } catch (e) {} });
+          this.$watch('wishlist', v => { try { localStorage.setItem('apexmart.wishlist', JSON.stringify(v)); } catch (e) {} });
+
+          // Lock background scroll while any overlay is open
+          this.$watch('overlayOpen', v => document.body.classList.toggle('overflow-hidden', v));
+        },
+
+        /* ------------------------------ Formatting --------------------------- */
+        money(value) {
+          return '$' + Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        },
+        ratingPct(product) { return Math.max(0, Math.min(100, Math.round((product.rating / 5) * 100))); },
+        discountLabel(product) {
+          if (!product.oldPrice || product.oldPrice <= product.price) return '';
+          return '-' + Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) + '%';
+        },
+        badgeClass(badge) {
+          const map = {
+            'Trending': 'bg-brand-600 text-white',
+            'New': 'bg-emerald-500 text-white',
+            'Best Seller': 'bg-amber-500 text-white',
+            'Limited': 'bg-slate-900 text-white'
+          };
+          return map[badge] || 'bg-slate-900 text-white';
+        },
+        fieldClass(key) {
+          const base = 'h-11 w-full rounded-xl border bg-white px-3.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 ';
+          return this.errors[key]
+            ? base + 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/10'
+            : base + 'border-slate-200 focus:border-brand-500 focus:ring-brand-500/10';
+        },
+
+        /* ------------------------- Filtering & search ------------------------ */
+        setCategory(category, scroll) {
+          this.activeCategory = category;
+          if (scroll) this.scrollToCatalog();
+        },
+        scrollToCatalog() {
+          this.$nextTick(() => {
+            const el = document.getElementById('catalog');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        },
+        resetFilters() { this.search = ''; this.activeCategory = 'All'; this.wishlistOnly = false; },
+        toggleWishlistOnly() {
+          this.wishlistOnly = !this.wishlistOnly;
+          if (this.wishlistOnly) this.scrollToCatalog();
+        },
+        countFor(category) {
+          return category === 'All'
+            ? this.products.length
+            : this.products.filter(p => p.category === category).length;
+        },
+
+        /* ------------------------------ Wishlist ----------------------------- */
+        isWishlisted(id) { return this.wishlist.includes(id); },
+        toggleWishlist(id) {
+          const index = this.wishlist.indexOf(id);
+          if (index > -1) this.wishlist.splice(index, 1);
+          else this.wishlist.push(id);
+        },
+
+        /* --------------------------- Cart operations ------------------------- */
+        addToCart(product, qty) {
+          const amount = Math.max(1, Math.min(99, qty || 1));
+          const existing = this.cart.find(i => i.id === product.id);
+          if (existing) existing.qty = Math.min(99, existing.qty + amount);
+          else this.cart.push({
+            id: product.id, title: product.title, category: product.category,
+            price: product.price, thumb: product.thumb, qty: amount
+          });
+          this.showToast(product, 'Added to cart');
+        },
+        addToCartById(id, qty) {
+          const product = this.products.find(p => p.id === id);
+          if (product) this.addToCart(product, qty);
+        },
+        increaseQty(id) {
+          const item = this.cart.find(i => i.id === id);
+          if (item) item.qty = Math.min(99, item.qty + 1);
+        },
+        decreaseQty(id) {
+          const item = this.cart.find(i => i.id === id);
+          if (!item) return;
+          if (item.qty > 1) item.qty -= 1;
+          else this.removeFromCart(id);
+        },
+        removeFromCart(id) {
+          const index = this.cart.findIndex(i => i.id === id);
+          if (index > -1) this.cart.splice(index, 1);
+        },
+        openCart() { this.cartOpen = true; },
+        shippingProgress() {
+          if (!this.cart.length) return 0;
+          return Math.min(100, Math.round((this.subtotal / this.FREE_SHIP_THRESHOLD) * 100));
+        },
+        shippingMessage() {
+          const remaining = Math.max(0, this.FREE_SHIP_THRESHOLD - this.subtotal);
+          return remaining > 0
+            ? 'Add ' + this.money(remaining) + ' more to unlock free express shipping'
+            : 'Nice — you have unlocked free express shipping!';
+        },
+
+        /* ------------------------------ Quick view --------------------------- */
+        openQuickView(product) {
+          this.quickViewProduct = product;
+          this.quickViewQty = 1;
+          this.quickViewOpen = true;
+        },
+        closeQuickView() { this.quickViewOpen = false; this.quickViewProduct = null; },
+
+        /* ------------------------------- Toasts ------------------------------ */
+        showToast(product, label) {
+          const id = ++this.toastSeq;
+          this.toasts.push({ id, title: product.title, image: product.thumb, label: label || 'Added to cart' });
+          setTimeout(() => this.removeToast(id), 3400);
+        },
+        removeToast(id) {
+          const index = this.toasts.findIndex(t => t.id === id);
+          if (index > -1) this.toasts.splice(index, 1);
+        },
+
+        /* ------------------------------- Overlays ---------------------------- */
+        closeAll() {
+          if (this.quickViewOpen) this.closeQuickView();
+          else if (this.checkoutOpen && this.checkoutStep === 'form') this.checkoutOpen = false;
+          else if (this.cartOpen) this.cartOpen = false;
+          else if (this.searchOpen) this.searchOpen = false;
+          else if (this.menuOpen) this.menuOpen = false;
+        },
+        subscribe() {
+          const address = this.newsletterEmail.trim();
+          if (!address) return;
+          this.newsletterEmail = '';
+          this.toasts.push({
+            id: ++this.toastSeq,
+            title: 'You joined ApexClub — enjoy 10% off!',
+            image: this.products[0].thumb,
+            label: 'Subscribed'
+          });
+          const id = this.toastSeq;
+          setTimeout(() => this.removeToast(id), 3400);
+        },
+
+        /* ------------------------------- Checkout ---------------------------- */
+        paymentLabel() {
+          const method = this.paymentMethods.find(m => m.id === this.form.payment);
+          return method ? method.label : 'Card';
+        },
+        startCheckout() {
+          if (!this.cart.length) return;
+          this.cartOpen = false;
+          this.errors = {};
+          this.checkoutStep = 'form';
+          this.checkoutOpen = true;
+        },
+        validateForm() {
+          const f = this.form;
+          const errors = {};
+          if (!f.name.trim()) errors.name = 'Please enter your full name.';
+          if (!f.email.trim()) errors.email = 'Please enter your email.';
+          else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) errors.email = 'Enter a valid email address.';
+          if (!f.phone.trim()) errors.phone = 'Please enter a phone number.';
+          if (!f.address.trim()) errors.address = 'Please enter your street address.';
+          if (!f.city.trim()) errors.city = 'Please enter your city.';
+          if (!f.zip.trim()) errors.zip = 'Please enter a ZIP / postcode.';
+
+          if (f.payment === 'card') {
+            const digits = f.cardNumber.replace(/\s+/g, '');
+            if (!digits) errors.cardNumber = 'Enter your card number.';
+            else if (!/^\d{15,16}$/.test(digits)) errors.cardNumber = 'Must be 15-16 digits.';
+
+            if (!f.cardExpiry.trim()) errors.cardExpiry = 'Required.';
+            else if (!/^(0[1-9]|1[0-2])\s*\/\s*\d{2}$/.test(f.cardExpiry.trim())) errors.cardExpiry = 'Use MM / YY.';
+
+            if (!f.cardCvc.trim()) errors.cardCvc = 'Required.';
+            else if (!/^\d{3,4}$/.test(f.cardCvc.trim())) errors.cardCvc = '3-4 digits.';
+          }
+
+          this.errors = errors;
+          return Object.keys(errors).length === 0;
+        },
+        placeOrder() {
+          if (!this.validateForm()) {
+            const ids = {
+              name: 'f-name', email: 'f-email', phone: 'f-phone', address: 'f-address',
+              city: 'f-city', zip: 'f-zip', cardNumber: 'f-card', cardExpiry: 'f-exp', cardCvc: 'f-cvc'
+            };
+            const firstKey = Object.keys(this.errors)[0];
+            const el = document.getElementById(ids[firstKey] || 'f-name');
+            if (el) el.focus();
+            return;
+          }
+
+          this.lastOrder = {
+            id: 'APX-' + Math.random().toString(36).slice(2, 6).toUpperCase() + Math.floor(Math.random() * 90 + 10),
+            name: this.form.name.trim(),
+            email: this.form.email.trim(),
+            items: this.cartCount,
+            total: this.total,
+            payment: this.paymentLabel()
+          };
+
+          this.checkoutStep = 'processing';
+          setTimeout(() => {
+            this.checkoutStep = 'success';
+            this.cart = [];
+            this.form.cardNumber = '';
+            this.form.cardExpiry = '';
+            this.form.cardCvc = '';
+          }, 1600);
+        },
+        finishOrder() {
+          this.checkoutOpen = false;
+          this.checkoutStep = 'form';
+          this.errors = {};
+          this.form = {
+            name: '', email: '', phone: '', address: '', city: '', zip: '',
+            country: 'United States', notes: '',
+            payment: 'card', cardNumber: '', cardExpiry: '', cardCvc: ''
+          };
+        }
+      }));
+    });
+  </script>
+</div>
+</body>
+</html>
